@@ -1,7 +1,8 @@
+import { FastifyInstance } from "fastify";
 import { knex } from "../database";
 import { User } from "../models/user";
 
-export async function usersRoutes(app: any) {
+export async function usersRoutes(app: FastifyInstance) {
 
     app.get('/db', async () => {
         const tables = await knex<User[]>('usuarios').select('*')
