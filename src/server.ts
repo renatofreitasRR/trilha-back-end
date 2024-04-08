@@ -1,25 +1,14 @@
 import fastify from 'fastify'
 import { knex } from './database';
-
+import { usersRoutes } from './routes/users';
 
 const app = fastify()
-
 const PORT = 3333;
+
+app.register(usersRoutes);
 
 app.get('/', () => {
     return 'Running'
-});
-
-app.get('/db', async () => {
-    const tables = await knex('sqlite_schema').select('*')
-
-    console.log("TABLES", tables);
-
-    return tables
-});
-
-app.get('/hello', () => {
-    return 'Hello World'
 });
 
 app.listen({

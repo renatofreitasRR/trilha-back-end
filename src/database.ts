@@ -1,8 +1,16 @@
-import { knex as setupKnex } from 'knex'
+import { knex as setupKnex, Knex } from 'knex'
 
-export const knex = setupKnex({
-    client: 'sqlite',
+export const config: Knex.Config = {
+    client: 'mysql',
     connection: {
-        filename: './tmp/app.db'
+        host: 'localhost',
+        port: 3306,
+        user: 'root',
+        password: '123',
+        database: 'trilha',
+        insecureAuth: true
     },
-});
+    useNullAsDefault: true,
+}
+
+export const knex = setupKnex(config);
