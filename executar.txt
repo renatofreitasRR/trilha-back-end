@@ -1,1 +1,0 @@
-npm tsx src/server.ts
