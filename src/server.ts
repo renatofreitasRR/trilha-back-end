@@ -5,7 +5,9 @@ import { usersRoutes } from './routes/users';
 const app = fastify()
 const PORT = 3333;
 
-app.register(usersRoutes);
+app.register(usersRoutes, {
+    prefix: 'usuarios'
+});
 
 app.get('/', () => {
     return 'Running'
