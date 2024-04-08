@@ -1,9 +1,9 @@
 import fastify from 'fastify'
-import { knex } from './database';
 import { usersRoutes } from './routes/users';
+import { env } from './env';
 
 const app = fastify()
-const PORT = 3333;
+const PORT = env.PORT;
 
 app.register(usersRoutes, {
     prefix: 'usuarios'
