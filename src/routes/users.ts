@@ -3,11 +3,16 @@ import { z } from 'zod';
 import { knex } from "../database";
 import { User } from "../models/user";
 
-export async function usersRoutes(app: FastifyInstance) {
-    app.get('/getall', async () => {
-        const tables = await knex<User[]>('usuarios').select('*')
+type UpdateUserParamsType = {
+    id: number
+}
 
-        return tables
+export async function usersRoutes(app: FastifyInstance) {
+
+    app.get('/getall', async () => {
+        const tables = await knex<User[]>('usuarios').select("*").where('ativo', true);
+
+        return tables;
     });
 
     app.get('/:id', async (request) => {
@@ -37,11 +42,62 @@ export async function usersRoutes(app: FastifyInstance) {
 
         const user = await knex<User>('usuarios').insert({
             nome: nome,
-            data_criacao: new Date(),
             email: email,
             senha: senha
         });
 
-        return reply.status(201).send()
+        return reply.status(201).send("Usuario criado com sucesso!");
+    });
+
+    app.post("/update/:id", async (request,reply) => {
+
+        const { id } = request.params as UpdateUserParamsType;
+
+        const userExists = await knex<User>("usuarios").where({
+            id,
+        });
+
+        if (userExists.length == 0) {
+            return reply.status(404).send("Houve um erro ao editar!");
+        }
+
+        const UpdateUserBodySchema = z.object({
+            nome: z.string().optional(),
+            email: z.string().optional(),
+            senha: z.string().optional()
+        });
+
+        const { nome, email, senha } = UpdateUserBodySchema.parse(request.body);
+
+        const user = await knex<User>("usuarios").update({
+            email,
+            nome,
+            senha
+        }).where({
+            id
+        });
+
+        return reply.status(201).send("Editado com sucesso!");
+    });
+
+    app.post("/delete/:id", async (request,reply) => {
+
+        const { id } = request.params as UpdateUserParamsType;
+
+        const userExists = await knex<User>("usuarios").where({
+            id,
+        });
+
+        if (userExists.length == 0) {
+            return reply.status(404).send("Houve um erro ao deletar!");
+        }
+
+        const user = await knex<User>("usuarios").update({
+            ativo : 0
+        }).where({
+            id
+        });
+
+        return reply.status(201).send("Deletado com sucesso!");
     });
 }

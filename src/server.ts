@@ -9,10 +9,6 @@ app.register(usersRoutes, {
     prefix: 'usuarios'
 });
 
-app.get('/', () => {
-    return 'Running'
-});
-
 app.listen({
     host: '0.0.0.0',
     port: PORT
