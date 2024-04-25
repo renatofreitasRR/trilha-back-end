@@ -24,8 +24,8 @@ export async function usersRoutes(app: FastifyInstance) {
         const { id } = getUserIdParamSchema.parse(request.params);
 
         const user = await knex<User>('usuarios').where({
-            id: parseInt(id)
-        })
+            USRCODIGO: parseInt(id)
+        });
 
         return user
     });
@@ -41,9 +41,9 @@ export async function usersRoutes(app: FastifyInstance) {
         const { nome, email, senha } = createUserBodySchema.parse(request.body);
 
         const user = await knex<User>('usuarios').insert({
-            nome: nome,
-            email: email,
-            senha: senha
+            USRNOME: nome,
+            USREMAIL: email,
+            USRSENHA: senha
         });
 
         return reply.status(201).send("Usuario criado com sucesso!");
@@ -54,7 +54,7 @@ export async function usersRoutes(app: FastifyInstance) {
         const { id } = request.params as UpdateUserParamsType;
 
         const userExists = await knex<User>("usuarios").where({
-            id,
+            USRCODIGO: id,
         });
 
         if (userExists.length == 0) {
@@ -70,11 +70,11 @@ export async function usersRoutes(app: FastifyInstance) {
         const { nome, email, senha } = UpdateUserBodySchema.parse(request.body);
 
         const user = await knex<User>("usuarios").update({
-            email,
-            nome,
-            senha
+            USREMAIL:email,
+            USRNOME : nome,
+            USRSENHA : senha
         }).where({
-            id
+            USRCODIGO : id
         });
 
         return reply.status(201).send("Editado com sucesso!");
@@ -85,18 +85,16 @@ export async function usersRoutes(app: FastifyInstance) {
         const { id } = request.params as UpdateUserParamsType;
 
         const userExists = await knex<User>("usuarios").where({
-            id,
+            USRCODIGO: id,
         });
 
         if (userExists.length == 0) {
             return reply.status(404).send("Houve um erro ao deletar!");
         }
 
-        const user = await knex<User>("usuarios").update({
-            ativo : 0
-        }).where({
-            id
-        });
+        /* const user = await knex<User>("usuarios").where({
+            USRCODIGO: id
+        }); */
 
         return reply.status(201).send("Deletado com sucesso!");
     });
