@@ -3,6 +3,7 @@ import { usersRoutes } from './routes/users';
 import { env } from './env';
 import { imagesRoutes } from './routes/images';
 import { usuarioImagensRoutes } from './routes/usuario-imagem';
+import { temasRoutes } from './routes/temas';
 
 const app = fastify()
 const PORT = env.PORT;
@@ -17,6 +18,10 @@ app.register(imagesRoutes, {
 
 app.register(usuarioImagensRoutes, {
     prefix: 'usuario-imagem'
+});
+
+app.register(temasRoutes, {
+    prefix: 'tema'
 });
 
 app.listen({

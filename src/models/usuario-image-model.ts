@@ -1,4 +1,4 @@
-export interface ImageUsuario {
+export interface usuarioImagemModel {
     USRCODIGO: number;
     IMGCODIGO: number;
 }

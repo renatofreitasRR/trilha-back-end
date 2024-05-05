@@ -2,6 +2,7 @@ import { FastifyInstance } from "fastify";
 import { z } from 'zod';
 import { knex } from "../database";
 import { Image } from "../models/image";
+import { Tema } from "../models/tema";
 
 type UpdateImageParamsType = {
     id: number
@@ -60,57 +61,43 @@ export async function imagesRoutes(app: FastifyInstance) {
         return imagem;
     });
 
-/* 
     app.post("/update/:id", async (request,reply) => {
 
         const { id } = request.params as UpdateImageParamsType;
 
-        const userExists = await knex<Image>("usuarios").where({
-            id,
+        const imagem = await knex<Image>("imagem").where({
+            IMGCODIGO : id
         });
 
-        if (userExists.length == 0) {
+        if (imagem.length == 0) {
             return reply.status(404).send("Houve um erro ao editar!");
         }
 
         const UpdateImageBodySchema = z.object({
             nome: z.string().optional(),
-            email: z.string().optional(),
-            senha: z.string().optional()
+            url: z.string().optional(),
+            preco: z.number().optional(),
+            idTema: z.number(),
         });
 
-        const { nome, email, senha } = UpdateImageBodySchema.parse(request.body);
+        const { nome, preco,url,idTema } = UpdateImageBodySchema.parse(request.body);
 
-        const user = await knex<Image>("usuarios").update({
-            email,
-            nome,
-            senha
-        }).where({
-            id
+        const tema = await knex<Tema>("tema").where({
+            TMACODIGO: idTema
         });
+
+        if (tema.length == 0) {
+            return reply.status(404).send("Tema não encontrado!");
+        }
+
+        await knex<Image>("imagem").update({
+            IMGPRECO:preco,
+            IMGNOME: nome,
+            IMGURL: url,
+         }).where({
+             TMACODIGO: idTema
+         });
 
         return reply.status(201).send("Editado com sucesso!");
     });
-
-    app.post("/delete/:id", async (request,reply) => {
-
-        const { id } = request.params as UpdateImageParamsType;
-
-        const userExists = await knex<Image>("usuarios").where({
-            id,
-        });
-
-        if (userExists.length == 0) {
-            return reply.status(404).send("Houve um erro ao deletar!");
-        }
-
-        const user = await knex<Image>("usuarios").update({
-            ativo : 0
-        }).where({
-            id
-        });
-
-        return reply.status(201).send("Deletado com sucesso!");
-    }); 
-    */
 }

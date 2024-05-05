@@ -10,12 +10,12 @@ type UpdateUserParamsType = {
 export async function usersRoutes(app: FastifyInstance) {
 
     app.get('/getall', async () => {
-        const tables = await knex<User[]>('usuarios').select("*").where('ativo', true);
+        const tables = await knex<User[]>('usuarios').select("*");
 
         return tables;
     });
 
-    app.get('/:id', async (request) => {
+    app.get('/:id', async (request,reply) => {
 
         const getUserIdParamSchema = z.object({
             id: z.string(),
@@ -26,6 +26,10 @@ export async function usersRoutes(app: FastifyInstance) {
         const user = await knex<User>('usuarios').where({
             USRCODIGO: parseInt(id)
         });
+
+        if(user.length <= 0) {
+            return reply.status(404).send("Nenhum usuario foi encontrada!");
+        }
 
         return user
     });
@@ -92,9 +96,9 @@ export async function usersRoutes(app: FastifyInstance) {
             return reply.status(404).send("Houve um erro ao deletar!");
         }
 
-        /* const user = await knex<User>("usuarios").where({
-            USRCODIGO: id
-        }); */
+        await knex<User>("usuarios").where({
+            USRCODIGO: id,
+        }).delete();
 
         return reply.status(201).send("Deletado com sucesso!");
     });
