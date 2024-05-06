@@ -3,14 +3,19 @@ import { z } from 'zod';
 import { knex } from "../database";
 import { User } from "../models/user";
 
-export async function usersRoutes(app: FastifyInstance) {
-    app.get('/getall', async () => {
-        const tables = await knex<User[]>('usuarios').select('*')
+type UpdateUserParamsType = {
+    id: number
+}
 
-        return tables
+export async function usersRoutes(app: FastifyInstance) {
+
+    app.get('/getall', async () => {
+        const tables = await knex<User[]>('usuarios').select("*");
+
+        return tables;
     });
 
-    app.get('/:id', async (request) => {
+    app.get('/:id', async (request,reply) => {
 
         const getUserIdParamSchema = z.object({
             id: z.string(),
@@ -19,8 +24,12 @@ export async function usersRoutes(app: FastifyInstance) {
         const { id } = getUserIdParamSchema.parse(request.params);
 
         const user = await knex<User>('usuarios').where({
-            id: parseInt(id)
-        })
+            USRCODIGO: parseInt(id)
+        });
+
+        if(user.length <= 0) {
+            return reply.status(404).send("Nenhum usuario foi encontrada!");
+        }
 
         return user
     });
@@ -36,12 +45,61 @@ export async function usersRoutes(app: FastifyInstance) {
         const { nome, email, senha } = createUserBodySchema.parse(request.body);
 
         const user = await knex<User>('usuarios').insert({
-            nome: nome,
-            data_criacao: new Date(),
-            email: email,
-            senha: senha
+            USRNOME: nome,
+            USREMAIL: email,
+            USRSENHA: senha
         });
 
-        return reply.status(201).send()
+        return reply.status(201).send("Usuario criado com sucesso!");
+    });
+
+    app.post("/update/:id", async (request,reply) => {
+
+        const { id } = request.params as UpdateUserParamsType;
+
+        const userExists = await knex<User>("usuarios").where({
+            USRCODIGO: id,
+        });
+
+        if (userExists.length == 0) {
+            return reply.status(404).send("Houve um erro ao editar!");
+        }
+
+        const UpdateUserBodySchema = z.object({
+            nome: z.string().optional(),
+            email: z.string().optional(),
+            senha: z.string().optional()
+        });
+
+        const { nome, email, senha } = UpdateUserBodySchema.parse(request.body);
+
+        const user = await knex<User>("usuarios").update({
+            USREMAIL:email,
+            USRNOME : nome,
+            USRSENHA : senha
+        }).where({
+            USRCODIGO : id
+        });
+
+        return reply.status(201).send("Editado com sucesso!");
+    });
+
+    app.post("/delete/:id", async (request,reply) => {
+
+        const { id } = request.params as UpdateUserParamsType;
+
+        const userExists = await knex<User>("usuarios").where({
+            USRCODIGO: id,
+        });
+
+        if (userExists.length == 0) {
+            return reply.status(404).send("Houve um erro ao deletar!");
+        }
+
+        await knex<User>("usuarios").where({
+            USRCODIGO: id,
+        }).delete();
+
+        return reply.status(201).send("Deletado com sucesso!");
     });
 }

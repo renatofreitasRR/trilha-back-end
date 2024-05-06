@@ -7,7 +7,6 @@ import { z } from 'zod';
 // password: '123',
 // database: 'trilha',
 
-
 const envSchema = z.object({
     NODE_ENV: z.enum(['development', 'production']).default('production'),
     DATABASE_CLIENT: z.enum(['mysql', 'pg']),
