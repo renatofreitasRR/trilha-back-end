@@ -3,41 +3,43 @@ import { z } from 'zod';
 import { knex } from "../database";
 import { Image } from "../models/image";
 import { Tema } from "../models/tema";
+import { Icone } from "../models/icone";
+import { Peca } from "../models/peca";
 
-type UpdateImageParamsType = {
+type UpdatePecaParamsType = {
     id: number
 }
 
-export async function imagesRoutes(app: FastifyInstance) {
+export async function pecaRoutes(app: FastifyInstance) {
 
     app.get('/getall', async () => {
-        const tables = await knex<Image[]>('imagem').select("*");
+        const tables = await knex<Peca[]>('peca').select("*");
 
         return tables;
     });
 
     app.get('/:id', async (request,reply) => {
 
-        const getImageIdParamSchema = z.object({
+        const getPecaIdParamSchema = z.object({
             id: z.string(),
         });
 
-        const { id } = getImageIdParamSchema.parse(request.params);
+        const { id } = getPecaIdParamSchema.parse(request.params);
 
-        const imagem = await knex<Image>('imagem').where({
-            IMGCODIGO : parseInt(id)
+        const peca = await knex<Peca>('peca').where({
+            PCACODIGO : parseInt(id)
         });
 
-        if (imagem.length <= 0) {
-            return reply.status(404).send("A imagem não existe!");
+        if (peca.length <= 0) {
+            return reply.status(404).send("A peça não existe!");
         }
 
-        return imagem;
+        return peca;
     });
 
     app.post('/create', async (request, reply) => {
 
-        const createImageBodySchema = z.object({
+        const createPecaBodySchema = z.object({
             nome: z.string(),
             url: z.string(),
             tema_codigo :z.number(),
@@ -47,7 +49,7 @@ export async function imagesRoutes(app: FastifyInstance) {
             nome,
             url,
             tema_codigo
-        } = createImageBodySchema.parse(request.body);
+        } = createPecaBodySchema.parse(request.body);
 
         const tema = await knex<Tema>("tema").where({
             TMACODIGO: tema_codigo
@@ -57,34 +59,34 @@ export async function imagesRoutes(app: FastifyInstance) {
             return reply.status(404).send("Tema não encontrado!");
         }
 
-        const image = await knex<Image>('imagem').insert({
-            IMGNOME: nome,
-            IMGURL: url,
+        const peca = await knex<Peca>('peca').insert({
+            PCANOME: nome,
+            PCAURL: url,
             TMACODIGO : tema_codigo
         });
 
-        return reply.status(201).send("Imagem criado com sucesso!");
+        return reply.status(201).send("Peca criada com sucesso!");
     });    
 
     app.post("/update/:id", async (request,reply) => {
 
-        const { id } = request.params as UpdateImageParamsType;
+        const { id } = request.params as UpdatePecaParamsType;
 
-        const imagem = await knex<Image>("imagem").where({
-            IMGCODIGO : id
+        const peca = await knex<Peca>("peca").where({
+            PCACODIGO : id
         });
 
-        if (imagem.length == 0) {
+        if (peca.length == 0) {
             return reply.status(404).send("Houve um erro ao editar!");
         }
 
-        const UpdateImageBodySchema = z.object({
+        const UpdatePecaBodySchema = z.object({
             nome: z.string().optional(),
             url: z.string().optional(),
             idTema: z.number(),
         });
 
-        const { nome, url,idTema } = UpdateImageBodySchema.parse(request.body);
+        const { nome, url, idTema } = UpdatePecaBodySchema.parse(request.body);
 
         const tema = await knex<Tema>("tema").where({
             TMACODIGO: idTema
@@ -94,9 +96,9 @@ export async function imagesRoutes(app: FastifyInstance) {
             return reply.status(404).send("Tema não encontrado!");
         }
 
-        await knex<Image>("imagem").update({
-            IMGNOME: nome,
-            IMGURL: url,
+        await knex<Peca>("peca").update({
+            PCANOME: nome,
+            PCAURL: url,
          }).where({
              TMACODIGO: idTema
          });

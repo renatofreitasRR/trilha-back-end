@@ -56,12 +56,14 @@ export async function temasRoutes(app: FastifyInstance) {
 
         const createTemaBodySchema = z.object({
             nome: z.string(),
+            preco: z.number(),
         });
 
-        const { nome } = createTemaBodySchema.parse(request.body);
+        const { nome, preco } = createTemaBodySchema.parse(request.body);
 
         const tema = await knex<Tema>('tema').insert({
-            TMANOME: nome
+            TMANOME: nome,
+            TMAPRECO: preco
         });
 
         return reply.status(201).send("Tema criado com sucesso!");
@@ -80,13 +82,15 @@ export async function temasRoutes(app: FastifyInstance) {
         }
 
         const UpdateTemaBodySchema = z.object({
-            nome: z.string().optional()
+            nome: z.string().optional(),
+            preco: z.number().optional()
         });
 
-        const { nome } = UpdateTemaBodySchema.parse(request.body);
+        const { nome, preco } = UpdateTemaBodySchema.parse(request.body);
 
         const user = await knex<Tema>("tema").update({
-            TMANOME:nome
+            TMANOME:nome,
+            TMAPRECO : preco
         }).where({
             TMACODIGO:id
         });

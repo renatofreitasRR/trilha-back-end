@@ -4,6 +4,8 @@ import { env } from './env';
 import { imagesRoutes } from './routes/images';
 import { usuarioImagensRoutes } from './routes/usuario-imagem';
 import { temasRoutes } from './routes/temas';
+import { iconeRoutes } from './routes/icone';
+import { pecaRoutes } from './routes/peca';
 
 const app = fastify()
 const PORT = env.PORT;
@@ -22,6 +24,14 @@ app.register(usuarioImagensRoutes, {
 
 app.register(temasRoutes, {
     prefix: 'tema'
+});
+
+app.register(iconeRoutes, {
+    prefix: 'icone'
+});
+
+app.register(pecaRoutes, {
+    prefix: 'peca'
 });
 
 app.listen({
