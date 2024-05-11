@@ -109,4 +109,27 @@ export async function iconeRoutes(app: FastifyInstance) {
 
         return reply.status(201).send("Editado com sucesso!");
     });
+
+    app.post("/delete/:id", async (request, reply) => {
+
+        const getIdParamSchema = z.object({
+            id: z.number(),
+        });
+
+        const { id } = getIdParamSchema.parse(request.params);
+
+        const iconExists = await knex<Icone>("icone").where({
+            icncodigo: id,
+        });
+
+        if (iconExists.length == 0) {
+            return reply.status(404).send("Houve um erro ao deletar!");
+        }
+
+        await knex<Icone>("icone").where({
+            icncodigo: id,
+        }).delete();
+
+        return reply.status(201).send("Deletado com sucesso!");
+    });
 }

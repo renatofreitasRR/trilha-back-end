@@ -107,4 +107,27 @@ export async function imagesRoutes(app: FastifyInstance) {
 
         return reply.status(201).send("Editado com sucesso!");
     });
+
+    app.post("/delete/:id", async (request, reply) => {
+
+        const getIdParamSchema = z.object({
+            id: z.number(),
+        });
+
+        const { id } = getIdParamSchema.parse(request.params);
+
+        const imgExists = await knex<Image>("imagem").where({
+            imgcodigo: id,
+        });
+
+        if (imgExists.length == 0) {
+            return reply.status(404).send("Houve um erro ao deletar!");
+        }
+
+        await knex<Image>("imagem").where({
+            imgcodigo: id,
+        }).delete();
+
+        return reply.status(201).send("Deletado com sucesso!");
+    });
 }
