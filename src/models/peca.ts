@@ -1,6 +1,6 @@
 export interface Peca {
     PCACODIGO: number;
-    PCANOME: string;
-    PCAURL: string;
-    TMACODIGO: number;
+    pcanome: string;
+    pcaurl: string;
+    tmacodigo: number;
 }

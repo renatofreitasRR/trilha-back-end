@@ -3,11 +3,11 @@ import { Icone } from "../models/icone";
 
 export class IconeEntity {
 
-    public static async get(id:number) {
+    public static async get(id: number) {
         const icone = await knex<Icone>("icone").where({
-            TMACODIGO: id
+            tmacodigo: id
         });
- 
+
         if (icone.length == 0) {
             throw new Error("Icone não encontrado!");
         }
@@ -15,18 +15,18 @@ export class IconeEntity {
         return icone[0];
     }
 
-    public static async delete(id:number):Promise<boolean> {
+    public static async delete(id: number): Promise<boolean> {
 
         const icone = await knex<Icone>("icone").where({
-            TMACODIGO: id
+            tmacodigo: id
         });
- 
+
         if (icone.length == 0) {
             throw new Error("Icone não encontrado!");
         }
 
         await knex<Icone>("icone").where({
-            TMACODIGO: id
+            tmacodigo: id
         }).delete();
 
         return true;

@@ -1,6 +1,6 @@
 export interface Icone {
-    ICNCODIGO: number;
-    ICNNOME: string;
-    ICNURL: string;
-    TMACODIGO: number;
+    icncodigo: number;
+    icnnome: string;
+    icnurl: string;
+    tmacodigo: number;
 }

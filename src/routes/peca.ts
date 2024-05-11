@@ -26,7 +26,7 @@ export async function pecaRoutes(app: FastifyInstance) {
 
         const { id } = getTemaIdParamSchema.parse(request.params);
 
-        const tables = await knex<Peca[]>('peca').where('TMACODIGO', id);
+        const tables = await knex<Peca[]>('peca').where('tmacodigo', id);
 
         return tables;
     });
@@ -67,7 +67,7 @@ export async function pecaRoutes(app: FastifyInstance) {
         } = createPecaBodySchema.parse(request.body);
 
         const tema = await knex<Tema>("tema").where({
-            TMACODIGO: tmacodigo
+            tmacodigo: tmacodigo
         });
 
         if (tema.length == 0) {
@@ -77,9 +77,9 @@ export async function pecaRoutes(app: FastifyInstance) {
         console.log("STEP 2");
 
         const peca = await knex<Peca>('peca').insert({
-            PCANOME: pcanome,
-            PCAURL: pcaurl,
-            TMACODIGO: tmacodigo
+            pcanome: pcanome,
+            pcaurl: pcaurl,
+            tmacodigo: tmacodigo
         });
 
         return reply.status(201).send("Peca criada com sucesso!");
@@ -105,8 +105,8 @@ export async function pecaRoutes(app: FastifyInstance) {
         const { pcanome, pcaurl } = UpdatePecaBodySchema.parse(request.body);
 
         await knex<Peca>("peca").update({
-            PCANOME: pcanome,
-            PCAURL: pcaurl,
+            pcanome: pcanome,
+            pcaurl: pcaurl,
         }).where({
             PCACODIGO: id
         });

@@ -3,11 +3,11 @@ import { Peca } from "../models/peca";
 
 export class PecaEntity {
 
-    public static async get(id:number) {
+    public static async get(id: number) {
         const peca = await knex<Peca>("peca").where({
-            TMACODIGO: id
+            tmacodigo: id
         });
- 
+
         if (peca.length == 0) {
             throw new Error("Peça não encontrada!");
         }
@@ -15,18 +15,18 @@ export class PecaEntity {
         return peca[0];
     }
 
-    public static async delete(id:number):Promise<boolean> {
+    public static async delete(id: number): Promise<boolean> {
 
         const peca = await knex<Peca>("peca").where({
-            TMACODIGO: id
+            tmacodigo: id
         });
- 
+
         if (peca.length == 0) {
             throw new Error("Peça não encontrado!");
         }
 
         await knex<Peca>("peca").where({
-            TMACODIGO: id
+            tmacodigo: id
         }).delete();
 
         return true;

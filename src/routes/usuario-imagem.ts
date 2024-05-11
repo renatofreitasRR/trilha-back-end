@@ -20,7 +20,7 @@ export async function usuarioImagensRoutes(app: FastifyInstance) {
         const { id } = getUserIdParamSchema.parse(request.params);
 
         const user: User[] = await knex<User>('usuarios').where({
-            USRCODIGO: parseInt(id)
+            usrcodigo: parseInt(id)
         });
 
         if (user.length <= 0) {
@@ -28,7 +28,7 @@ export async function usuarioImagensRoutes(app: FastifyInstance) {
         }
 
         const usuario_imagens: usuarioImagemModel[] = await knex<usuarioImagemModel>("usuario_imagem").select("*").where({
-            USRCODIGO: user[0].USRCODIGO
+            usrcodigo: user[0].usrcodigo
         });
 
         if (usuario_imagens.length <= 0) {
@@ -39,7 +39,7 @@ export async function usuarioImagensRoutes(app: FastifyInstance) {
 
         await Promise.all(usuario_imagens.map(async (relacao) => {
             const imagem = await knex<Image>("imagem").select("*").where({
-                IMGCODIGO: relacao.IMGCODIGO
+                imgcodigo: relacao.imgcodigo
             });
             imagens.push(imagem[0]);
         }));
@@ -68,9 +68,9 @@ export async function usuarioImagensRoutes(app: FastifyInstance) {
         } = createImageBodySchema.parse(request.body);
 
         const image = await knex<Image>('imagem').insert({
-            IMGNOME: nome,
-            IMGURL: url,
-            TMACODIGO: tema_codigo,
+            imgnome: nome,
+            imgurl: url,
+            tmacodigo: tema_codigo,
         });
 
         return reply.status(201).send("Imagem criado com sucesso!");
@@ -85,7 +85,7 @@ export async function usuarioImagensRoutes(app: FastifyInstance) {
         const { id } = getImageIdParamSchema.parse(request.params);
 
         const imagem = await knex<Image>('imagem').where({
-            IMGCODIGO: parseInt(id)
+            imgcodigo: parseInt(id)
         });
 
         if (imagem.length <= 0) {

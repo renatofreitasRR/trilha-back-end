@@ -3,11 +3,11 @@ import { Image } from "../models/image";
 
 export class ImageEntity {
 
-    public static async get(id:number) : Promise<Image> {
+    public static async get(id: number): Promise<Image> {
         const imagem = await knex<Image>("imagem").where({
-            TMACODIGO: id
+            tmacodigo: id
         });
- 
+
         if (imagem.length == 0) {
             throw new Error("Imagem não encontrado!");
         }
@@ -15,18 +15,18 @@ export class ImageEntity {
         return imagem[0];
     }
 
-    public static async delete(id:number) {
+    public static async delete(id: number) {
 
         const imagem = await knex<Image>("imagem").where({
-            TMACODIGO: id
+            tmacodigo: id
         });
- 
+
         if (imagem.length == 0) {
             throw new Error("Imagem não encontrada!");
         }
 
         await knex<Image>("imagem").where({
-            TMACODIGO: id
+            tmacodigo: id
         }).delete();
 
         return true;

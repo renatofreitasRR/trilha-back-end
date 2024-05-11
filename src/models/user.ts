@@ -1,7 +1,7 @@
 export interface User {
-    USRCODIGO : number;
-    USRNOME : string;
-    USREMAIL : string;
-    USRSENHA : string;
-    USRMOEDAS : number;
+    usrcodigo: number;
+    usrnome: string;
+    usremail: string;
+    usrsenha: string;
+    USRMOEDAS: number;
 }

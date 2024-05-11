@@ -15,7 +15,7 @@ export async function usersRoutes(app: FastifyInstance) {
         return tables;
     });
 
-    app.get('/:id', async (request,reply) => {
+    app.get('/:id', async (request, reply) => {
 
         const getUserIdParamSchema = z.object({
             id: z.string(),
@@ -24,10 +24,10 @@ export async function usersRoutes(app: FastifyInstance) {
         const { id } = getUserIdParamSchema.parse(request.params);
 
         const user = await knex<User>('usuarios').where({
-            USRCODIGO: parseInt(id)
+            usrcodigo: parseInt(id)
         });
 
-        if(user.length <= 0) {
+        if (user.length <= 0) {
             return reply.status(404).send("Nenhum usuario foi encontrada!");
         }
 
@@ -45,20 +45,20 @@ export async function usersRoutes(app: FastifyInstance) {
         const { nome, email, senha } = createUserBodySchema.parse(request.body);
 
         const user = await knex<User>('usuarios').insert({
-            USRNOME: nome,
-            USREMAIL: email,
-            USRSENHA: senha
+            usrnome: nome,
+            usremail: email,
+            usrsenha: senha
         });
 
         return reply.status(201).send("Usuario criado com sucesso!");
     });
 
-    app.post("/update/:id", async (request,reply) => {
+    app.post("/update/:id", async (request, reply) => {
 
         const { id } = request.params as UpdateUserParamsType;
 
         const userExists = await knex<User>("usuarios").where({
-            USRCODIGO: id,
+            usrcodigo: id,
         });
 
         if (userExists.length == 0) {
@@ -74,22 +74,22 @@ export async function usersRoutes(app: FastifyInstance) {
         const { nome, email, senha } = UpdateUserBodySchema.parse(request.body);
 
         const user = await knex<User>("usuarios").update({
-            USREMAIL:email,
-            USRNOME : nome,
-            USRSENHA : senha
+            usremail: email,
+            usrnome: nome,
+            usrsenha: senha
         }).where({
-            USRCODIGO : id
+            usrcodigo: id
         });
 
         return reply.status(201).send("Editado com sucesso!");
     });
 
-    app.post("/delete/:id", async (request,reply) => {
+    app.post("/delete/:id", async (request, reply) => {
 
         const { id } = request.params as UpdateUserParamsType;
 
         const userExists = await knex<User>("usuarios").where({
-            USRCODIGO: id,
+            usrcodigo: id,
         });
 
         if (userExists.length == 0) {
@@ -97,7 +97,7 @@ export async function usersRoutes(app: FastifyInstance) {
         }
 
         await knex<User>("usuarios").where({
-            USRCODIGO: id,
+            usrcodigo: id,
         }).delete();
 
         return reply.status(201).send("Deletado com sucesso!");

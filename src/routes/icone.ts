@@ -25,7 +25,7 @@ export async function iconeRoutes(app: FastifyInstance) {
 
         const { id } = getTemaIdParamSchema.parse(request.params);
 
-        const tables = await knex<Icone[]>('icone').where('TMACODIGO', id);
+        const tables = await knex<Icone[]>('icone').where('tmacodigo', id);
 
         return tables;
     });
@@ -39,7 +39,7 @@ export async function iconeRoutes(app: FastifyInstance) {
         const { id } = getIconeIdParamSchema.parse(request.params);
 
         const icone = await knex<Icone>('icone').where({
-            ICNCODIGO: parseInt(id)
+            icncodigo: parseInt(id)
         });
 
         if (icone.length <= 0) {
@@ -64,7 +64,7 @@ export async function iconeRoutes(app: FastifyInstance) {
         } = createIconeBodySchema.parse(request.body);
 
         const tema = await knex<Tema>("tema").where({
-            TMACODIGO: tmacodigo
+            tmacodigo: tmacodigo
         });
 
         if (tema.length == 0) {
@@ -72,9 +72,9 @@ export async function iconeRoutes(app: FastifyInstance) {
         }
 
         const icone = await knex<Icone>('icone').insert({
-            ICNNOME: icnnome,
-            ICNURL: icnurl,
-            TMACODIGO: tmacodigo
+            icnnome: icnnome,
+            icnurl: icnurl,
+            tmacodigo: tmacodigo
         });
 
         return reply.status(201).send("Icone criado com sucesso!");
@@ -85,7 +85,7 @@ export async function iconeRoutes(app: FastifyInstance) {
         const { id } = request.params as UpdateIconeParamsType;
 
         const icone = await knex<Icone>("icone").where({
-            ICNCODIGO: id
+            icncodigo: id
         });
 
         if (icone.length == 0) {
@@ -101,10 +101,10 @@ export async function iconeRoutes(app: FastifyInstance) {
 
 
         await knex<Icone>("icone").update({
-            ICNNOME: icnnome,
-            ICNURL: icnurl,
+            icnnome: icnnome,
+            icnurl: icnurl,
         }).where({
-            ICNCODIGO: id
+            icncodigo: id
         });
 
         return reply.status(201).send("Editado com sucesso!");

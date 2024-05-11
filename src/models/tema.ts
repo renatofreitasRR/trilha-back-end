@@ -1,5 +1,5 @@
 export interface Tema {
-    TMACODIGO: number;
-    TMANOME : string;
-    TMAPRECO : number;
+    tmacodigo: number;
+    tmanome: string;
+    tmapreco: number;
 }

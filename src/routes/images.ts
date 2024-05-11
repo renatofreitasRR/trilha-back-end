@@ -24,7 +24,7 @@ export async function imagesRoutes(app: FastifyInstance) {
 
         const { id } = getTemaIdParamSchema.parse(request.params);
 
-        const tables = await knex<Image[]>('imagem').where('TMACODIGO', id);
+        const tables = await knex<Image[]>('imagem').where('tmacodigo', id);
 
         return tables;
     });
@@ -38,7 +38,7 @@ export async function imagesRoutes(app: FastifyInstance) {
         const { id } = getImageIdParamSchema.parse(request.params);
 
         const imagem = await knex<Image>('imagem').where({
-            IMGCODIGO: parseInt(id)
+            imgcodigo: parseInt(id)
         });
 
         if (imagem.length <= 0) {
@@ -63,7 +63,7 @@ export async function imagesRoutes(app: FastifyInstance) {
         } = createImageBodySchema.parse(request.body);
 
         const tema = await knex<Tema>("tema").where({
-            TMACODIGO: tmacodigo
+            tmacodigo: tmacodigo
         });
 
         if (tema.length == 0) {
@@ -71,9 +71,9 @@ export async function imagesRoutes(app: FastifyInstance) {
         }
 
         const image = await knex<Image>('imagem').insert({
-            IMGNOME: imgnome,
-            IMGURL: imgurl,
-            TMACODIGO: tmacodigo
+            imgnome: imgnome,
+            imgurl: imgurl,
+            tmacodigo: tmacodigo
         });
 
         return reply.status(201).send("Imagem criado com sucesso!");
@@ -84,7 +84,7 @@ export async function imagesRoutes(app: FastifyInstance) {
         const { id } = request.params as UpdateImageParamsType;
 
         const imagem = await knex<Image>("imagem").where({
-            IMGCODIGO: id
+            imgcodigo: id
         });
 
         if (imagem.length == 0) {
@@ -99,10 +99,10 @@ export async function imagesRoutes(app: FastifyInstance) {
         const { imgnome, imgurl } = UpdateImageBodySchema.parse(request.body);
 
         await knex<Image>("imagem").update({
-            IMGNOME: imgnome,
-            IMGURL: imgurl,
+            imgnome: imgnome,
+            imgurl: imgurl,
         }).where({
-            IMGCODIGO: id
+            imgcodigo: id
         });
 
         return reply.status(201).send("Editado com sucesso!");

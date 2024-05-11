@@ -1,4 +1,4 @@
 export interface usuarioImagemModel {
-    USRCODIGO: number;
-    IMGCODIGO: number;
+    usrcodigo: number;
+    imgcodigo: number;
 }
