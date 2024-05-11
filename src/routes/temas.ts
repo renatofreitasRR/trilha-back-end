@@ -5,7 +5,7 @@ import { Tema } from "../models/tema";
 import { ImageEntity } from "../entities/ImageEntity";
 import { IconeEntity } from "../entities/IconeEntity";
 import { PecaEntity } from "../entities/PecaEntity";
-import { Image as ImagemBD } from "../models/image";
+import { Image, Image as ImagemBD } from "../models/image";
 import { Peca } from "../models/peca";
 import { Icone } from "../models/icone";
 
@@ -21,30 +21,30 @@ export async function temasRoutes(app: FastifyInstance) {
         return tables;
     });
 
-    app.get('/:id', async (request,reply) => {
+    app.get('/:id', async (request, reply) => {
 
         const getUserIdParamSchema = z.object({
             id: z.string(),
         });
-        
+
         const { id } = getUserIdParamSchema.parse(request.params);
-        
+
         const tema = await knex<Tema>('tema').where({
             TMACODIGO: parseInt(id)
         });
 
-        if(tema.length <= 0) {
+        if (tema.length <= 0) {
             return reply.status(404).send("Nenhum tema foi encontrada!");
         }
 
         try {
-           const response : any = {};
+            const response: any = {};
 
-           response.imagem = await ImageEntity.get(parseInt(id));
-           response.icone = await IconeEntity.get(parseInt(id));
-           response.peca = await PecaEntity.get(parseInt(id));
+            response.imagem = await ImageEntity.get(parseInt(id));
+            response.icone = await IconeEntity.get(parseInt(id));
+            response.peca = await PecaEntity.get(parseInt(id));
 
-            return {"tema": {...tema[0], ...response}};
+            return { "tema": { ...tema[0], ...response } };
 
         } catch (error) {
             return reply.status(404).send(error);
@@ -55,21 +55,69 @@ export async function temasRoutes(app: FastifyInstance) {
     app.post('/create', async (request, reply) => {
 
         const createTemaBodySchema = z.object({
-            nome: z.string(),
-            preco: z.number(),
+            tema: z.object({
+                tmanome: z.string(),
+                tmapreco: z.number(),
+            }),
+            icone: z.object({
+                icnnome: z.string(),
+                icnurl: z.string()
+            }),
+            peca: z.object({
+                pcanome: z.string(),
+                pcaurl: z.string()
+            }),
+            imagem: z.object({
+                imgnome: z.string(),
+                imgurl: z.string()
+            })
         });
 
-        const { nome, preco } = createTemaBodySchema.parse(request.body);
+        const {
+            tema,
+            icone,
+            imagem,
+            peca
+        } = createTemaBodySchema.parse(request.body);
 
-        const tema = await knex<Tema>('tema').insert({
-            TMANOME: nome,
-            TMAPRECO: preco
-        });
+        try {
+            const temaInserted = await knex<Tema>('tema').insert({
+                TMANOME: tema.tmanome,
+                TMAPRECO: tema.tmapreco
+            });
 
-        return reply.status(201).send("Tema criado com sucesso!");
+            const id = temaInserted[0];
+
+            console.log("ID GERADO", id);
+
+            await knex<Image>('imagem').insert({
+                IMGNOME: imagem.imgnome,
+                IMGURL: imagem.imgurl,
+                TMACODIGO: id
+            });
+
+            await knex<Peca>('peca').insert({
+                PCANOME: peca.pcanome,
+                PCAURL: peca.pcaurl,
+                TMACODIGO: id
+            });
+
+            await knex<Icone>('icone').insert({
+                ICNNOME: icone.icnnome,
+                ICNURL: icone.icnurl,
+                TMACODIGO: id
+            });
+
+            return reply.status(201).send("Tema criado com sucesso!");
+        }
+        catch (err: any) {
+            return reply.status(500).send("Erro ao criar tema!");
+        }
+
+
     });
 
-    app.post("/update/:id", async (request,reply) => {
+    app.post("/update/:id", async (request, reply) => {
 
         const { id } = request.params as UpdateTemaParamsType;
 
@@ -89,21 +137,21 @@ export async function temasRoutes(app: FastifyInstance) {
         const { nome, preco } = UpdateTemaBodySchema.parse(request.body);
 
         const user = await knex<Tema>("tema").update({
-            TMANOME:nome,
-            TMAPRECO : preco
+            TMANOME: nome,
+            TMAPRECO: preco
         }).where({
-            TMACODIGO:id
+            TMACODIGO: id
         });
 
         return reply.status(201).send("Editado com sucesso!");
     });
 
-    app.post("/delete/:id", async (request,reply) => {
+    app.post("/delete/:id", async (request, reply) => {
 
         const { id } = request.params as UpdateTemaParamsType;
 
         const temaExiste = await knex<Tema>("tema").where({
-            TMACODIGO : id
+            TMACODIGO: id
         });
 
         if (temaExiste.length == 0) {
@@ -111,19 +159,19 @@ export async function temasRoutes(app: FastifyInstance) {
         }
 
         try {
-            await ImageEntity.delete(id); 
-            await IconeEntity.delete(id); 
+            await ImageEntity.delete(id);
+            await IconeEntity.delete(id);
             await PecaEntity.delete(id);
 
             await knex<Tema>("tema").where({
-                TMACODIGO:id
+                TMACODIGO: id
             }).delete();
 
             return reply.status(201).send("Tema deletado com sucesso!");
         } catch (error) {
             return reply.status(404).send(error);
         }
-        
-    }); 
+
+    });
 
 }

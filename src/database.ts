@@ -7,8 +7,8 @@ export const config: Knex.Config = {
         host: 'localhost',
         port: 3306,
         user: 'root',
-        password: '',
-        database: 'trilha_v2',
+        password: '123',
+        database: 'trilha',
         insecureAuth: true
     } : env.DATABASE_URL,
     useNullAsDefault: true,

@@ -17,7 +17,20 @@ export async function iconeRoutes(app: FastifyInstance) {
         return tables;
     });
 
-    app.get('/:id', async (request,reply) => {
+    app.get('/getallbytema/:id', async (request, reply) => {
+
+        const getTemaIdParamSchema = z.object({
+            id: z.string(),
+        });
+
+        const { id } = getTemaIdParamSchema.parse(request.params);
+
+        const tables = await knex<Icone[]>('icone').where('TMACODIGO', id);
+
+        return tables;
+    });
+
+    app.get('/:id', async (request, reply) => {
 
         const getIconeIdParamSchema = z.object({
             id: z.string(),
@@ -26,7 +39,7 @@ export async function iconeRoutes(app: FastifyInstance) {
         const { id } = getIconeIdParamSchema.parse(request.params);
 
         const icone = await knex<Icone>('icone').where({
-            ICNCODIGO : parseInt(id)
+            ICNCODIGO: parseInt(id)
         });
 
         if (icone.length <= 0) {
@@ -39,19 +52,19 @@ export async function iconeRoutes(app: FastifyInstance) {
     app.post('/create', async (request, reply) => {
 
         const createIconeBodySchema = z.object({
-            nome: z.string(),
-            url: z.string(),
-            tema_codigo :z.number(),
+            icnnome: z.string(),
+            icnurl: z.string(),
+            tmacodigo: z.number()
         });
 
-        const { 
-            nome,
-            url,
-            tema_codigo
+        const {
+            icnnome,
+            icnurl,
+            tmacodigo
         } = createIconeBodySchema.parse(request.body);
 
         const tema = await knex<Tema>("tema").where({
-            TMACODIGO: tema_codigo
+            TMACODIGO: tmacodigo
         });
 
         if (tema.length == 0) {
@@ -59,20 +72,20 @@ export async function iconeRoutes(app: FastifyInstance) {
         }
 
         const icone = await knex<Icone>('icone').insert({
-            ICNNOME: nome,
-            ICNURL: url,
-            TMACODIGO : tema_codigo
-        });        
+            ICNNOME: icnnome,
+            ICNURL: icnurl,
+            TMACODIGO: tmacodigo
+        });
 
         return reply.status(201).send("Icone criado com sucesso!");
-    });    
-    
-    app.post("/update/:id", async (request,reply) => {
+    });
+
+    app.post("/update/:id", async (request, reply) => {
 
         const { id } = request.params as UpdateIconeParamsType;
 
         const icone = await knex<Icone>("icone").where({
-            ICNCODIGO : id
+            ICNCODIGO: id
         });
 
         if (icone.length == 0) {
@@ -80,27 +93,19 @@ export async function iconeRoutes(app: FastifyInstance) {
         }
 
         const UpdateIconeBodySchema = z.object({
-            nome: z.string().optional(),
-            url: z.string().optional(),
-            idTema: z.number(),
+            icnnome: z.string().optional(),
+            icnurl: z.string().optional(),
         });
 
-        const { nome, url, idTema } = UpdateIconeBodySchema.parse(request.body);
+        const { icnnome, icnurl } = UpdateIconeBodySchema.parse(request.body);
 
-        const tema = await knex<Tema>("tema").where({
-            TMACODIGO: idTema
-        });
-
-        if (tema.length == 0) {
-            return reply.status(404).send("Tema não encontrado!");
-        }
 
         await knex<Icone>("icone").update({
-            ICNNOME: nome,
-            ICNURL: url,
-         }).where({
-            TMACODIGO: idTema
-         });
+            ICNNOME: icnnome,
+            ICNURL: icnurl,
+        }).where({
+            ICNCODIGO: id
+        });
 
         return reply.status(201).send("Editado com sucesso!");
     });

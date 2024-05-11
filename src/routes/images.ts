@@ -16,7 +16,20 @@ export async function imagesRoutes(app: FastifyInstance) {
         return tables;
     });
 
-    app.get('/:id', async (request,reply) => {
+    app.get('/getallbytema/:id', async (request, reply) => {
+
+        const getTemaIdParamSchema = z.object({
+            id: z.string(),
+        });
+
+        const { id } = getTemaIdParamSchema.parse(request.params);
+
+        const tables = await knex<Image[]>('imagem').where('TMACODIGO', id);
+
+        return tables;
+    });
+
+    app.get('/:id', async (request, reply) => {
 
         const getImageIdParamSchema = z.object({
             id: z.string(),
@@ -25,7 +38,7 @@ export async function imagesRoutes(app: FastifyInstance) {
         const { id } = getImageIdParamSchema.parse(request.params);
 
         const imagem = await knex<Image>('imagem').where({
-            IMGCODIGO : parseInt(id)
+            IMGCODIGO: parseInt(id)
         });
 
         if (imagem.length <= 0) {
@@ -38,19 +51,19 @@ export async function imagesRoutes(app: FastifyInstance) {
     app.post('/create', async (request, reply) => {
 
         const createImageBodySchema = z.object({
-            nome: z.string(),
-            url: z.string(),
-            tema_codigo :z.number(),
+            imgnome: z.string(),
+            imgurl: z.string(),
+            tmacodigo: z.number(),
         });
 
-        const { 
-            nome,
-            url,
-            tema_codigo
+        const {
+            imgnome,
+            imgurl,
+            tmacodigo
         } = createImageBodySchema.parse(request.body);
 
         const tema = await knex<Tema>("tema").where({
-            TMACODIGO: tema_codigo
+            TMACODIGO: tmacodigo
         });
 
         if (tema.length == 0) {
@@ -58,20 +71,20 @@ export async function imagesRoutes(app: FastifyInstance) {
         }
 
         const image = await knex<Image>('imagem').insert({
-            IMGNOME: nome,
-            IMGURL: url,
-            TMACODIGO : tema_codigo
+            IMGNOME: imgnome,
+            IMGURL: imgurl,
+            TMACODIGO: tmacodigo
         });
 
         return reply.status(201).send("Imagem criado com sucesso!");
-    });    
+    });
 
-    app.post("/update/:id", async (request,reply) => {
+    app.post("/update/:id", async (request, reply) => {
 
         const { id } = request.params as UpdateImageParamsType;
 
         const imagem = await knex<Image>("imagem").where({
-            IMGCODIGO : id
+            IMGCODIGO: id
         });
 
         if (imagem.length == 0) {
@@ -79,27 +92,18 @@ export async function imagesRoutes(app: FastifyInstance) {
         }
 
         const UpdateImageBodySchema = z.object({
-            nome: z.string().optional(),
-            url: z.string().optional(),
-            idTema: z.number(),
+            imgnome: z.string().optional(),
+            imgurl: z.string().optional(),
         });
 
-        const { nome, url,idTema } = UpdateImageBodySchema.parse(request.body);
-
-        const tema = await knex<Tema>("tema").where({
-            TMACODIGO: idTema
-        });
-
-        if (tema.length == 0) {
-            return reply.status(404).send("Tema não encontrado!");
-        }
+        const { imgnome, imgurl } = UpdateImageBodySchema.parse(request.body);
 
         await knex<Image>("imagem").update({
-            IMGNOME: nome,
-            IMGURL: url,
-         }).where({
-             TMACODIGO: idTema
-         });
+            IMGNOME: imgnome,
+            IMGURL: imgurl,
+        }).where({
+            IMGCODIGO: id
+        });
 
         return reply.status(201).send("Editado com sucesso!");
     });

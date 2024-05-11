@@ -18,7 +18,20 @@ export async function pecaRoutes(app: FastifyInstance) {
         return tables;
     });
 
-    app.get('/:id', async (request,reply) => {
+    app.get('/getallbytema/:id', async (request, reply) => {
+
+        const getTemaIdParamSchema = z.object({
+            id: z.string(),
+        });
+
+        const { id } = getTemaIdParamSchema.parse(request.params);
+
+        const tables = await knex<Peca[]>('peca').where('TMACODIGO', id);
+
+        return tables;
+    });
+
+    app.get('/:id', async (request, reply) => {
 
         const getPecaIdParamSchema = z.object({
             id: z.string(),
@@ -27,7 +40,7 @@ export async function pecaRoutes(app: FastifyInstance) {
         const { id } = getPecaIdParamSchema.parse(request.params);
 
         const peca = await knex<Peca>('peca').where({
-            PCACODIGO : parseInt(id)
+            PCACODIGO: parseInt(id)
         });
 
         if (peca.length <= 0) {
@@ -40,40 +53,44 @@ export async function pecaRoutes(app: FastifyInstance) {
     app.post('/create', async (request, reply) => {
 
         const createPecaBodySchema = z.object({
-            nome: z.string(),
-            url: z.string(),
-            tema_codigo :z.number(),
+            pcanome: z.string(),
+            pcaurl: z.string(),
+            tmacodigo: z.number(),
         });
 
-        const { 
-            nome,
-            url,
-            tema_codigo
+        console.log("STEP 1");
+
+        const {
+            pcanome,
+            pcaurl,
+            tmacodigo
         } = createPecaBodySchema.parse(request.body);
 
         const tema = await knex<Tema>("tema").where({
-            TMACODIGO: tema_codigo
+            TMACODIGO: tmacodigo
         });
 
         if (tema.length == 0) {
             return reply.status(404).send("Tema não encontrado!");
         }
 
+        console.log("STEP 2");
+
         const peca = await knex<Peca>('peca').insert({
-            PCANOME: nome,
-            PCAURL: url,
-            TMACODIGO : tema_codigo
+            PCANOME: pcanome,
+            PCAURL: pcaurl,
+            TMACODIGO: tmacodigo
         });
 
         return reply.status(201).send("Peca criada com sucesso!");
-    });    
+    });
 
-    app.post("/update/:id", async (request,reply) => {
+    app.post("/update/:id", async (request, reply) => {
 
         const { id } = request.params as UpdatePecaParamsType;
 
         const peca = await knex<Peca>("peca").where({
-            PCACODIGO : id
+            PCACODIGO: id
         });
 
         if (peca.length == 0) {
@@ -81,27 +98,18 @@ export async function pecaRoutes(app: FastifyInstance) {
         }
 
         const UpdatePecaBodySchema = z.object({
-            nome: z.string().optional(),
-            url: z.string().optional(),
-            idTema: z.number(),
+            pcanome: z.string().optional(),
+            pcaurl: z.string().optional(),
         });
 
-        const { nome, url, idTema } = UpdatePecaBodySchema.parse(request.body);
-
-        const tema = await knex<Tema>("tema").where({
-            TMACODIGO: idTema
-        });
-
-        if (tema.length == 0) {
-            return reply.status(404).send("Tema não encontrado!");
-        }
+        const { pcanome, pcaurl } = UpdatePecaBodySchema.parse(request.body);
 
         await knex<Peca>("peca").update({
-            PCANOME: nome,
-            PCAURL: url,
-         }).where({
-             TMACODIGO: idTema
-         });
+            PCANOME: pcanome,
+            PCAURL: pcaurl,
+        }).where({
+            PCACODIGO: id
+        });
 
         return reply.status(201).send("Editado com sucesso!");
     });

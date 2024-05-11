@@ -6,8 +6,15 @@ import { usuarioImagensRoutes } from './routes/usuario-imagem';
 import { temasRoutes } from './routes/temas';
 import { iconeRoutes } from './routes/icone';
 import { pecaRoutes } from './routes/peca';
+import cors from '@fastify/cors'
 
 const app = fastify()
+
+app.register(cors, {
+    origin: "*",
+    methods: ['GET', 'PUT', 'POST', 'DELETE']
+})
+
 const PORT = env.PORT;
 
 app.register(usersRoutes, {
@@ -23,20 +30,20 @@ app.register(usuarioImagensRoutes, {
 });
 
 app.register(temasRoutes, {
-    prefix: 'tema'
+    prefix: 'temas'
 });
 
 app.register(iconeRoutes, {
-    prefix: 'icone'
+    prefix: 'icones'
 });
 
 app.register(pecaRoutes, {
-    prefix: 'peca'
+    prefix: 'pecas'
 });
 
 app.listen({
     host: '0.0.0.0',
-    port: PORT
+    port: PORT,
 })
     .then(() => {
         console.log(`Running on port http://localhost:${PORT}`)

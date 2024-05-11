@@ -11,7 +11,7 @@ type UpdateImageParamsType = {
 
 export async function usuarioImagensRoutes(app: FastifyInstance) {
 
-    app.get('/:id/getall', async (request,reply) => {
+    app.get('/:id/getall', async (request, reply) => {
 
         const getUserIdParamSchema = z.object({
             id: z.string(),
@@ -19,22 +19,22 @@ export async function usuarioImagensRoutes(app: FastifyInstance) {
 
         const { id } = getUserIdParamSchema.parse(request.params);
 
-        const user : User[] = await knex<User>('usuarios').where({
+        const user: User[] = await knex<User>('usuarios').where({
             USRCODIGO: parseInt(id)
         });
 
-        if(user.length <= 0) {
+        if (user.length <= 0) {
             return reply.status(404).send("Nenhum usuário foi encontrada!");
         }
 
-        const usuario_imagens : usuarioImagemModel[] = await knex<usuarioImagemModel>("usuario_imagem").select("*").where({
-            USRCODIGO : user[0].USRCODIGO
+        const usuario_imagens: usuarioImagemModel[] = await knex<usuarioImagemModel>("usuario_imagem").select("*").where({
+            USRCODIGO: user[0].USRCODIGO
         });
 
-        if(usuario_imagens.length <= 0) {
+        if (usuario_imagens.length <= 0) {
             return reply.status(404).send("Nenhuma imagem foi encontrada!");
         }
-        
+
         let imagens: Image[] = [];
 
         await Promise.all(usuario_imagens.map(async (relacao) => {
@@ -43,11 +43,11 @@ export async function usuarioImagensRoutes(app: FastifyInstance) {
             });
             imagens.push(imagem[0]);
         }));
-        
+
         return {
-            "usuario" : user,
+            "usuario": user,
             "imagens": imagens,
-            "relacao" : usuario_imagens
+            "relacao": usuario_imagens
         };
     });
 
@@ -57,10 +57,10 @@ export async function usuarioImagensRoutes(app: FastifyInstance) {
             nome: z.string(),
             url: z.string(),
             preco: z.number(),
-            tema_codigo :z.number(),
+            tema_codigo: z.number(),
         });
 
-        const { 
+        const {
             nome,
             url,
             preco,
@@ -69,15 +69,14 @@ export async function usuarioImagensRoutes(app: FastifyInstance) {
 
         const image = await knex<Image>('imagem').insert({
             IMGNOME: nome,
-            IMGPRECO:preco,
             IMGURL: url,
-            TMACODIGO : tema_codigo
+            TMACODIGO: tema_codigo,
         });
 
         return reply.status(201).send("Imagem criado com sucesso!");
     });
 
-    app.get('/:id', async (request,reply) => {
+    app.get('/:id', async (request, reply) => {
 
         const getImageIdParamSchema = z.object({
             id: z.string(),
@@ -86,7 +85,7 @@ export async function usuarioImagensRoutes(app: FastifyInstance) {
         const { id } = getImageIdParamSchema.parse(request.params);
 
         const imagem = await knex<Image>('imagem').where({
-            IMGCODIGO : parseInt(id)
+            IMGCODIGO: parseInt(id)
         });
 
         if (imagem.length <= 0) {
