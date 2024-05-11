@@ -132,15 +132,15 @@ export async function temasRoutes(app: FastifyInstance) {
         }
 
         const UpdateTemaBodySchema = z.object({
-            nome: z.string().optional(),
-            preco: z.number().optional()
+            tmanome: z.string().optional(),
+            tmapreco: z.number().optional()
         });
 
-        const { nome, preco } = UpdateTemaBodySchema.parse(request.body);
+        const { tmanome, tmapreco } = UpdateTemaBodySchema.parse(request.body);
 
         const user = await knex<Tema>("tema").update({
-            tmanome: nome,
-            tmapreco: preco
+            tmanome: tmanome,
+            tmapreco: tmapreco
         }).where({
             tmacodigo: id
         });
