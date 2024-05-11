@@ -40,7 +40,7 @@ export async function pecaRoutes(app: FastifyInstance) {
         const { id } = getPecaIdParamSchema.parse(request.params);
 
         const peca = await knex<Peca>('peca').where({
-            PCACODIGO: parseInt(id)
+            pcacodigo: parseInt(id)
         });
 
         if (peca.length <= 0) {
@@ -90,7 +90,7 @@ export async function pecaRoutes(app: FastifyInstance) {
         const { id } = request.params as UpdatePecaParamsType;
 
         const peca = await knex<Peca>("peca").where({
-            PCACODIGO: id
+            pcacodigo: id
         });
 
         if (peca.length == 0) {
@@ -108,7 +108,7 @@ export async function pecaRoutes(app: FastifyInstance) {
             pcanome: pcanome,
             pcaurl: pcaurl,
         }).where({
-            PCACODIGO: id
+            pcacodigo: id
         });
 
         return reply.status(201).send("Editado com sucesso!");
