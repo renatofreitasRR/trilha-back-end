@@ -111,7 +111,7 @@ export async function imagesRoutes(app: FastifyInstance) {
     app.post("/delete/:id", async (request, reply) => {
 
         const getIdParamSchema = z.object({
-            id: z.number(),
+            id: z.coerce.number(),
         });
 
         const { id } = getIdParamSchema.parse(request.params);
