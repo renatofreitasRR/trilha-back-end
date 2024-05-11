@@ -111,6 +111,8 @@ export async function temasRoutes(app: FastifyInstance) {
             return reply.status(201).send("Tema criado com sucesso!");
         }
         catch (err: any) {
+            console.log("ERROR - Create - Tema", err);
+
             return reply.status(500).send("Erro ao criar tema!");
         }
 
