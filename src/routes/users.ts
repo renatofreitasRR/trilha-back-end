@@ -10,7 +10,7 @@ type UpdateUserParamsType = {
 export async function usersRoutes(app: FastifyInstance) {
 
     app.get('/getall', async () => {
-        const tables = await knex<User[]>('usuarios').select("*");
+        const tables = await knex<User[]>('usuario').select("*");
 
         return tables;
     });
@@ -23,7 +23,7 @@ export async function usersRoutes(app: FastifyInstance) {
 
         const { id } = getUserIdParamSchema.parse(request.params);
 
-        const user = await knex<User>('usuarios').where({
+        const user = await knex<User>('usuario').where({
             usrcodigo: parseInt(id)
         });
 
@@ -44,7 +44,7 @@ export async function usersRoutes(app: FastifyInstance) {
 
         const { nome, email, senha } = createUserBodySchema.parse(request.body);
 
-        const user = await knex<User>('usuarios').insert({
+        const user = await knex<User>('usuario').insert({
             usrnome: nome,
             usremail: email,
             usrsenha: senha
@@ -57,7 +57,7 @@ export async function usersRoutes(app: FastifyInstance) {
 
         const { id } = request.params as UpdateUserParamsType;
 
-        const userExists = await knex<User>("usuarios").where({
+        const userExists = await knex<User>("usuario").where({
             usrcodigo: id,
         });
 
@@ -73,7 +73,7 @@ export async function usersRoutes(app: FastifyInstance) {
 
         const { nome, email, senha } = UpdateUserBodySchema.parse(request.body);
 
-        const user = await knex<User>("usuarios").update({
+        const user = await knex<User>("usuario").update({
             usremail: email,
             usrnome: nome,
             usrsenha: senha
@@ -88,7 +88,7 @@ export async function usersRoutes(app: FastifyInstance) {
 
         const { id } = request.params as UpdateUserParamsType;
 
-        const userExists = await knex<User>("usuarios").where({
+        const userExists = await knex<User>("usuario").where({
             usrcodigo: id,
         });
 
