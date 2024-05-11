@@ -81,10 +81,10 @@ export async function temasRoutes(app: FastifyInstance) {
         } = createTemaBodySchema.parse(request.body);
 
         try {
-            const temaInserted = await knex<Tema>('tema').insert({
+            const temaInserted = await knex<Tema>('tema').returning('id').insert({
                 tmanome: tema.tmanome,
                 tmapreco: tema.tmapreco
-            });
+            })
 
             const id = temaInserted[0];
 
