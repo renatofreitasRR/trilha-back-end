@@ -3,5 +3,5 @@ export interface User {
     usrnome: string;
     usremail: string;
     usrsenha: string;
-    USRMOEDAS: number;
+    usrmoedas: number;
 }
