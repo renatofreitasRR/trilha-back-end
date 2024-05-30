@@ -39,15 +39,17 @@ export async function usersRoutes(app: FastifyInstance) {
         const createUserBodySchema = z.object({
             nome: z.string(),
             email: z.string(),
-            senha: z.string()
+            senha: z.string(),
+            moedas: z.number(),
         });
 
-        const { nome, email, senha } = createUserBodySchema.parse(request.body);
+        const { nome, email, senha, moedas } = createUserBodySchema.parse(request.body);
 
-        const user = await knex<User>('usuarios').insert({
+        const user = await knex<User>('usuario').insert({
             USRNOME: nome,
             USREMAIL: email,
-            USRSENHA: senha
+            USRSENHA: senha,
+            USRMOEDAS: moedas,
         });
 
         return reply.status(201).send("Usuario criado com sucesso!");
@@ -57,7 +59,7 @@ export async function usersRoutes(app: FastifyInstance) {
 
         const { id } = request.params as UpdateUserParamsType;
 
-        const userExists = await knex<User>("usuarios").where({
+        const userExists = await knex<User>("usuario").where({
             USRCODIGO: id,
         });
 
@@ -68,15 +70,17 @@ export async function usersRoutes(app: FastifyInstance) {
         const UpdateUserBodySchema = z.object({
             nome: z.string().optional(),
             email: z.string().optional(),
-            senha: z.string().optional()
+            senha: z.string().optional(),
+            moedas: z.number().optional()
         });
 
-        const { nome, email, senha } = UpdateUserBodySchema.parse(request.body);
+        const { nome, email, senha, moedas } = UpdateUserBodySchema.parse(request.body);
 
-        const user = await knex<User>("usuarios").update({
+        const user = await knex<User>("usuario").update({
             USREMAIL:email,
             USRNOME : nome,
-            USRSENHA : senha
+            USRSENHA : senha,
+            USRMOEDAS : moedas
         }).where({
             USRCODIGO : id
         });
@@ -88,7 +92,7 @@ export async function usersRoutes(app: FastifyInstance) {
 
         const { id } = request.params as UpdateUserParamsType;
 
-        const userExists = await knex<User>("usuarios").where({
+        const userExists = await knex<User>("usuario").where({
             USRCODIGO: id,
         });
 
@@ -96,7 +100,7 @@ export async function usersRoutes(app: FastifyInstance) {
             return reply.status(404).send("Houve um erro ao deletar!");
         }
 
-        await knex<User>("usuarios").where({
+        await knex<User>("usuario").where({
             USRCODIGO: id,
         }).delete();
 
