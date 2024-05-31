@@ -6,11 +6,8 @@ import { imagesRoutes } from './routes/images';
 import { temasRoutes } from './routes/temas';
 import { iconeRoutes } from './routes/icone';
 import { pecaRoutes } from './routes/peca';
-<<<<<<< HEAD
 import cors from '@fastify/cors'
-=======
 import { usuarioTemaRoutes } from './routes/usuario-tema';
->>>>>>> 983db94cefd5cbffb3e271cac523ff83946babe0
 
 const app = fastify()
 
