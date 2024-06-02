@@ -21,7 +21,7 @@ export async function usuarioTemaRoutes(app: FastifyInstance) {
         const { id } = getUserIdParamSchema.parse(request.params);
 
         const user : User[] = await knex<User>('usuario').where({
-            USRCODIGO: parseInt(id)
+            usrcodigo: parseInt(id)
         });
 
         if(user.length <= 0) {
@@ -29,7 +29,7 @@ export async function usuarioTemaRoutes(app: FastifyInstance) {
         }
 
         const usuario_temas : usuarioTema[] = await knex<usuarioTema>("usuario_tema").select("*").where({
-            USRCODIGO : user[0].USRCODIGO
+            usrcodigo : user[0].usrcodigo
         });
 
         if(usuario_temas.length <= 0) {
@@ -40,7 +40,7 @@ export async function usuarioTemaRoutes(app: FastifyInstance) {
 
         await Promise.all(usuario_temas.map(async (relacao) => {
             const imagem = await knex<Tema>("tema").select("*").where({
-                TMACODIGO: relacao.TMACODIGO
+                tmacodigo: relacao.tmacodigo
             });
             temas.push(imagem[0]);
         }));
@@ -67,9 +67,9 @@ export async function usuarioTemaRoutes(app: FastifyInstance) {
         } = createUsuarioTemaBodySchema.parse(request.body);
 
         const usrTema = await knex<usuarioTema>('usuario_tema').insert({
-            USRCODIGO: id_usr,
-            TMACODIGO: id_tema,
-            TMAATIVO: tma_ativo
+            usrcodigo: id_usr,
+            tmacodigo: id_tema,
+            tmaativo: tma_ativo
         });
 
         return reply.status(201).send("Tema criado para usuario!");
@@ -80,8 +80,8 @@ export async function usuarioTemaRoutes(app: FastifyInstance) {
         const { iduser, idtema } = request.params as UpdateUserTemaParamsType;
 
         const userExists = await knex<usuarioTema>("usuario_tema").where({
-            USRCODIGO: iduser,
-            TMACODIGO: idtema
+            usrcodigo: iduser,
+            tmacodigo: idtema
         });
 
         if (userExists.length == 0) {
@@ -95,10 +95,10 @@ export async function usuarioTemaRoutes(app: FastifyInstance) {
         const { tema_ativo } = UpdateUserTemaBodySchema.parse(request.body);
 
         const userTema = await knex<usuarioTema>("usuario_tema").update({            
-            TMAATIVO : tema_ativo
+            tmaativo : tema_ativo
         }).where({
-            USRCODIGO : iduser,
-            TMACODIGO : idtema
+            usrcodigo : iduser,
+            tmacodigo : idtema
         });
 
         return reply.status(201).send("Editado com sucesso!");
@@ -109,8 +109,8 @@ export async function usuarioTemaRoutes(app: FastifyInstance) {
         const { iduser, idtema } = request.params as UpdateUserTemaParamsType;
 
         const userTemaExists = await knex<usuarioTema>("usuario_tema").where({
-            USRCODIGO: iduser,
-            TMACODIGO: idtema
+            usrcodigo: iduser,
+            tmacodigo: idtema
         });
 
         if (userTemaExists.length == 0) {
@@ -118,8 +118,8 @@ export async function usuarioTemaRoutes(app: FastifyInstance) {
         }
 
         await knex<usuarioTema>("usuario_tema").where({
-            USRCODIGO: iduser,
-            TMACODIGO: idtema
+            usrcodigo: iduser,
+            tmacodigo: idtema
         }).delete();
 
         return reply.status(201).send("Deletado com sucesso!");

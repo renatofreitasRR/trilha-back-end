@@ -6,8 +6,9 @@ import { imagesRoutes } from './routes/images';
 import { temasRoutes } from './routes/temas';
 import { iconeRoutes } from './routes/icone';
 import { pecaRoutes } from './routes/peca';
-import cors from '@fastify/cors'
 import { usuarioTemaRoutes } from './routes/usuario-tema';
+import cors from '@fastify/cors'
+import { authRoutes } from './routes/auth';
 
 const app = fastify()
 
@@ -40,6 +41,10 @@ app.register(pecaRoutes, {
 
 app.register(usuarioTemaRoutes, {
     prefix: 'usuario-tema'
+});
+
+app.register(authRoutes, {
+    prefix: 'auth'
 });
 
 app.listen({
