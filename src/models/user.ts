@@ -4,4 +4,5 @@ export interface User {
     usremail: string;
     usrsenha: string;
     usrmoedas: number;
+    tema_ativo: number;
 }

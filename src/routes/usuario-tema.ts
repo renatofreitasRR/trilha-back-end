@@ -7,7 +7,8 @@ import { usuarioTema } from "../models/usuario-tema";
 
 type UpdateUserTemaParamsType = {
     iduser: number,
-    idtema: number
+    idtema: number,
+    id: number
 }
 
 export async function usuarioTemaRoutes(app: FastifyInstance) {
@@ -26,10 +27,10 @@ export async function usuarioTemaRoutes(app: FastifyInstance) {
 
         if(user.length <= 0) {
             return reply.status(404).send("Nenhum usuário foi encontrada!");
-        }
+        }        
 
         const usuario_temas : usuarioTema[] = await knex<usuarioTema>("usuario_tema").select("*").where({
-            usrcodigo : user[0].usrcodigo
+            usrcodigo : user[0].USRCODIGO
         });
 
         if(usuario_temas.length <= 0) {
@@ -40,7 +41,7 @@ export async function usuarioTemaRoutes(app: FastifyInstance) {
 
         await Promise.all(usuario_temas.map(async (relacao) => {
             const imagem = await knex<Tema>("tema").select("*").where({
-                tmacodigo: relacao.tmacodigo
+                tmacodigo: relacao.TMACODIGO
             });
             temas.push(imagem[0]);
         }));
@@ -56,26 +57,23 @@ export async function usuarioTemaRoutes(app: FastifyInstance) {
 
         const createUsuarioTemaBodySchema = z.object({
             id_usr: z.number(),
-            id_tema :z.number(),
-            tma_ativo :z.number(),
+            id_tema :z.number()
         });
 
         const { 
             id_usr,
-            id_tema,
-            tma_ativo
+            id_tema
         } = createUsuarioTemaBodySchema.parse(request.body);
 
         const usrTema = await knex<usuarioTema>('usuario_tema').insert({
             usrcodigo: id_usr,
-            tmacodigo: id_tema,
-            tmaativo: tma_ativo
+            tmacodigo: id_tema
         });
 
         return reply.status(201).send("Tema criado para usuario!");
     }); 
     
-    app.post("/update/:iduser/:idtema", async (request,reply) => {
+    /* app.post("/update/:iduser/:idtema", async (request,reply) => {
 
         const { iduser, idtema } = request.params as UpdateUserTemaParamsType;
 
@@ -102,8 +100,8 @@ export async function usuarioTemaRoutes(app: FastifyInstance) {
         });
 
         return reply.status(201).send("Editado com sucesso!");
-    });
-
+    }); */
+    
     app.post("/delete/:iduser/:idtema", async (request,reply) => {
 
         const { iduser, idtema } = request.params as UpdateUserTemaParamsType;
