@@ -117,6 +117,29 @@ export async function usersRoutes(app: FastifyInstance) {
         return tema ;
     });
 
+    app.get('/getIconAtivo/:id', async (request, reply) => {
+        const getUserIdParamSchema = z.object({
+            id: z.string(),
+        });
+
+        const { id } = getUserIdParamSchema.parse(request.params);
+
+        const user = await knex<User>('usuario').select('*').where({
+            usrcodigo: parseInt(id)
+        });                
+
+        // o usuario deve ter um tema ativo, nem que seja o default
+        /* if (user[0].TEMA_ATIVO == null) {
+            return reply.status(404).send("Nenhum tema encontrado - definido tema padrão");
+        } */
+
+        const icon = await knex<Tema>('icone').select('*').where({
+            tmacodigo: parseInt(user[0].TEMA_ATIVO)
+        });
+
+        return icon[0];
+    });
+
     app.post("/update/:id", async (request, reply) => {
 
         const { id } = request.params as UpdateUserParamsType;
