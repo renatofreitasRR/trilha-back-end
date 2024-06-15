@@ -10,7 +10,7 @@ import { PecaEntity } from "../entities/PecaEntity";
 import { Tema } from "../models/tema";
 
 type UpdateUserParamsType = {
-    id : number
+    id: number
 }
 
 export async function usersRoutes(app: FastifyInstance) {
@@ -60,7 +60,7 @@ export async function usersRoutes(app: FastifyInstance) {
 
         return reply.status(201).send("Usuario criado com sucesso!");
     });
-    
+
     app.post('/updateTemaAtivo/:id', async (request, reply) => {
         const { id } = request.params as UpdateUserParamsType;
 
@@ -70,12 +70,12 @@ export async function usersRoutes(app: FastifyInstance) {
 
         if (userExists.length == 0) {
             return reply.status(404).send("Usuário não encontrado!");
-        }        
+        }
 
         const UpdateThemeBodySchema = z.object({
             tema_ativo: z.number(),
         });
-            
+
         const { tema_ativo } = UpdateThemeBodySchema.parse(request.body);
 
         const temaExists = await knex<usuarioTema>("usuario_tema").select("*").where({
@@ -84,7 +84,7 @@ export async function usersRoutes(app: FastifyInstance) {
 
         if (temaExists.length == 0) {
             return reply.status(404).send("Tema não encontrado/comprado!");
-        } 
+        }
 
         await knex<User>("usuario").update({
             tema_ativo: tema_ativo,
@@ -104,17 +104,17 @@ export async function usersRoutes(app: FastifyInstance) {
 
         const user = await knex<User>('usuario').select('*').where({
             usrcodigo: parseInt(id)
-        });                
+        });
 
-        if (user[0].TEMA_ATIVO == null) {
+        if (user[0].tema_ativo == null) {
             return reply.status(404).send("Nenhum tema encontrado - definido tema padrão");
         }
 
         const tema = await knex<Tema>('tema').select('*').where({
-            tmacodigo: parseInt(user[0].TEMA_ATIVO)
+            tmacodigo: user[0].tema_ativo
         });
 
-        return tema ;
+        return tema;
     });
 
     app.get('/getIconAtivo/:id', async (request, reply) => {
@@ -126,7 +126,7 @@ export async function usersRoutes(app: FastifyInstance) {
 
         const user = await knex<User>('usuario').select('*').where({
             usrcodigo: parseInt(id)
-        });                
+        });
 
         // o usuario deve ter um tema ativo, nem que seja o default
         /* if (user[0].TEMA_ATIVO == null) {
@@ -134,7 +134,7 @@ export async function usersRoutes(app: FastifyInstance) {
         } */
 
         const icon = await knex<Tema>('icone').select('*').where({
-            tmacodigo: parseInt(user[0].TEMA_ATIVO)
+            tmacodigo: user[0].tema_ativo
         });
 
         return icon[0];
@@ -214,7 +214,7 @@ export async function usersRoutes(app: FastifyInstance) {
         const user = await knex<User>("usuario").where({
             usrcodigo: Number(id)
         }).increment('USRMOEDAS', moedas);
-        
+
         return reply.status(201).send("Valor acrescentado com sucesso!");
     });
 
@@ -240,8 +240,8 @@ export async function usersRoutes(app: FastifyInstance) {
         const coins = await knex<User>("usuario").select("usrmoedas").where({
             usrcodigo: id,
         });
-        
-                
+
+
         if (coins[0].usrmoedas < moedas) {
             return reply.status(400).send("Não há saldo suficiente!");
         }
@@ -260,14 +260,14 @@ export async function usersRoutes(app: FastifyInstance) {
 
         const { id } = getCoinsIdParamSchema.parse(request.params);
 
-        const user = await knex<User>("usuario").select('USRMOEDAS').where({
+        const user = await knex<User>("usuario").select('usrmoedas').where({
             usrcodigo: parseInt(id),
-        });                      
+        });
 
         if (user.length == 0) {
             return reply.status(404).send("Usuário não encontrado!");
         }
 
-        return { USRMOEDAS: user[0].USRMOEDAS };
+        return { USRMOEDAS: user[0].usrmoedas };
     });
 }

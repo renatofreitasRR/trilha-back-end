@@ -1,0 +1,63 @@
+
+-- Tabela usuario_tema
+DROP TABLE IF EXISTS usuario_tema;
+CREATE TABLE usuario_tema (
+    usrcodigo INT,
+    tmacodigo INT,
+    FOREIGN KEY (usrcodigo) REFERENCES usuario(usrcodigo),
+    FOREIGN KEY (tmacodigo) REFERENCES tema(tmacodigo),
+    PRIMARY KEY (usrcodigo, tmacodigo)
+);
+
+-- Tabela usuario
+DROP TABLE IF EXISTS usuario;
+CREATE TABLE usuario (
+    usrcodigo SERIAL PRIMARY KEY,
+    usrnome VARCHAR(100),
+    usremail VARCHAR(100),
+    usrsenha VARCHAR(32),
+    usrmoedas INT, 
+    tema_ativo INT
+);
+
+-- Tabela imagem
+DROP TABLE IF EXISTS imagem;
+CREATE TABLE imagem (
+    imgcodigo SERIAL PRIMARY KEY,
+    imgnome VARCHAR(100),
+    imgurl VARCHAR(100),
+    tmacodigo INT,
+    FOREIGN KEY (tmacodigo) REFERENCES tema(tmacodigo)
+);
+
+-- Tabela icone
+DROP TABLE IF EXISTS icone;
+CREATE TABLE icone (
+    icncodigo SERIAL PRIMARY KEY,
+    icnnome VARCHAR(100),
+    icnurl VARCHAR(100),
+    tmacodigo INT,
+    FOREIGN KEY (tmacodigo) REFERENCES tema(tmacodigo)
+);
+
+-- Tabela peca
+DROP TABLE IF EXISTS peca;
+CREATE TABLE peca (
+    pcacodigo SERIAL PRIMARY KEY,
+    pcanome VARCHAR(100),
+    pcaurl VARCHAR(100),
+    tmacodigo INT,
+    FOREIGN KEY (tmacodigo) REFERENCES tema(tmacodigo)
+);
+
+-- Tabela tema
+DROP TABLE IF EXISTS tema;
+CREATE TABLE tema (
+    tmacodigo SERIAL PRIMARY KEY,
+    tmanome VARCHAR(100),
+    tmapreco INT
+);
+
+
+
+
