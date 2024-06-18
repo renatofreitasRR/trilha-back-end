@@ -73,13 +73,21 @@ export async function usersRoutes(app: FastifyInstance) {
         }
 
         const UpdateThemeBodySchema = z.object({
-            tema_ativo: z.number(),
+            nome_tema_ativo: z.string(),
         });
 
-        const { tema_ativo } = UpdateThemeBodySchema.parse(request.body);
+        const { nome_tema_ativo } = UpdateThemeBodySchema.parse(request.body);
+
+        const searchTemaByName = await knex<Tema>("tema").select("*").where({
+            tmanome: nome_tema_ativo
+        });
+
+        if (searchTemaByName.length == 0) {
+            return reply.status(404).send("Tema não existe!");
+        }
 
         const temaExists = await knex<usuarioTema>("usuario_tema").select("*").where({
-            tmacodigo: tema_ativo
+            tmacodigo: searchTemaByName[0].tmacodigo
         });
 
         if (temaExists.length == 0) {
@@ -87,7 +95,7 @@ export async function usersRoutes(app: FastifyInstance) {
         }
 
         await knex<User>("usuario").update({
-            tema_ativo: tema_ativo,
+            tema_ativo: temaExists[0]?.tmacodigo,
         }).where({
             usrcodigo: id
         });
