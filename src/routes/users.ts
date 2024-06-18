@@ -86,16 +86,8 @@ export async function usersRoutes(app: FastifyInstance) {
             return reply.status(404).send("Tema não existe!");
         }
 
-        const temaExists = await knex<usuarioTema>("usuario_tema").select("*").where({
-            tmacodigo: searchTemaByName[0].tmacodigo
-        });
-
-        if (temaExists.length == 0) {
-            return reply.status(404).send("Tema não encontrado/comprado!");
-        }
-
         await knex<User>("usuario").update({
-            tema_ativo: temaExists[0]?.tmacodigo,
+            tema_ativo: searchTemaByName[0]?.tmacodigo,
         }).where({
             usrcodigo: id
         });
